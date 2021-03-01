@@ -1,5 +1,12 @@
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Event = void 0;
+class Event {
+    constructor(payload) {
+        this.payload = payload;
+    }
+}
+exports.Event = Event;
 class EventInterface {
     constructor() {
         this.listeners = {};
