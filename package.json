@@ -14,7 +14,9 @@
   },
   "homepage": "https://github.com/rremigius/event-interface-mixin",
   "bugs": "https://github.com/rremigius/event-interface-mixin/issues",
-  "keywords": ["events"],
+  "keywords": [
+    "events"
+  ],
   "author": "Remi Alkemade <info@remialkemade.nl> (https://www.remialkemade.nl)",
   "license": "ISC",
   "dependencies": {

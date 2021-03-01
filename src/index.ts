@@ -1,11 +1,24 @@
-'use strict';
+export type Callback<T> = (payload:T)=>void;
+export type EventDescription = {
+	name?:string,
+	payload?: any
+}
+
+export type Payload<T extends Event<any>> = T['payload'];
+
+export class Event<T> {
+	payload:T;
+	constructor(payload:T) {
+		this.payload = payload;
+	}
+}
 
 export default class EventInterface {
 	private listeners:{
 		[key: string]: { callback:Function }[]
 	} = {};
 
-	public on(event:string, callback:Function) {
+	public on<T extends EventDescription>(event:string, callback:Callback<T['payload']>) {
 		if (!(event in this.listeners)) {
 			this.listeners[event] = [];
 		}
@@ -13,7 +26,7 @@ export default class EventInterface {
 		this.listeners[event].push({callback});
 	}
 
-	public off(event:string, callback:Function) {
+	public off<T extends EventDescription>(event:string, callback:Callback<T['payload']>) {
 		if(!(event in this.listeners)) return;
 		let listeners = this.listeners[event];
 
@@ -24,7 +37,7 @@ export default class EventInterface {
 		}
 	}
 
-	public fire(event:string, data:unknown) {
+	public fire<T extends EventDescription>(event:string, data?:T['payload']) {
 		if (!(event in this.listeners)) {
 			return;
 		}
