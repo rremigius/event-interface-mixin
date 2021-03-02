@@ -18,6 +18,11 @@ export default class EventInterface {
 		[key: string]: { callback:Function }[]
 	} = {};
 
+	/**
+	 * Subscribes an event listener to the given event.
+	 * @param {string} event
+	 * @param {Callback} callback
+	 */
 	public on<T extends EventDescription>(event:string, callback:Callback<T['payload']>) {
 		if (!(event in this.listeners)) {
 			this.listeners[event] = [];
@@ -26,6 +31,11 @@ export default class EventInterface {
 		this.listeners[event].push({callback});
 	}
 
+	/**
+	 * Unsubscribes an event listener from the given event.
+	 * @param {string} event
+	 * @param {Callback} callback
+	 */
 	public off<T extends EventDescription>(event:string, callback:Callback<T['payload']>) {
 		if(!(event in this.listeners)) return;
 		let listeners = this.listeners[event];
@@ -37,6 +47,11 @@ export default class EventInterface {
 		}
 	}
 
+	/**
+	 * Fies an event with the given data.
+	 * @param {string} event
+	 * @param {T['payload']>}data
+	 */
 	public fire<T extends EventDescription>(event:string, data?:T['payload']) {
 		if (!(event in this.listeners)) {
 			return;
@@ -47,14 +62,23 @@ export default class EventInterface {
 		}
 	}
 
+	/**
+	 * Returns the `on` method of the event interface, e.g. to add to a class instance.
+	 */
 	public getOnMethod() {
 		return this.on.bind(this);
 	}
 
+	/**
+	 * Returns the `fire` method of the event interface, e.g. to add to a class instance.
+	 */
 	public getFireMethod() {
 		return this.fire.bind(this);
 	}
 
+	/**
+	 * Returns the `off` method of the event interface, e.g. to add to a class instance.
+	 */
 	public getOffMethod() {
 		return this.off.bind(this);
 	}
