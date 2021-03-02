@@ -11,12 +11,22 @@ class EventInterface {
     constructor() {
         this.listeners = {};
     }
+    /**
+     * Subscribes an event listener to the given event.
+     * @param {string} event
+     * @param {Callback} callback
+     */
     on(event, callback) {
         if (!(event in this.listeners)) {
             this.listeners[event] = [];
         }
         this.listeners[event].push({ callback });
     }
+    /**
+     * Unsubscribes an event listener from the given event.
+     * @param {string} event
+     * @param {Callback} callback
+     */
     off(event, callback) {
         if (!(event in this.listeners))
             return;
@@ -27,6 +37,11 @@ class EventInterface {
             }
         }
     }
+    /**
+     * Fies an event with the given data.
+     * @param {string} event
+     * @param {T['payload']>}data
+     */
     fire(event, data) {
         if (!(event in this.listeners)) {
             return;
@@ -35,12 +50,21 @@ class EventInterface {
             listener.callback(data);
         }
     }
+    /**
+     * Returns the `on` method of the event interface, e.g. to add to a class instance.
+     */
     getOnMethod() {
         return this.on.bind(this);
     }
+    /**
+     * Returns the `fire` method of the event interface, e.g. to add to a class instance.
+     */
     getFireMethod() {
         return this.fire.bind(this);
     }
+    /**
+     * Returns the `off` method of the event interface, e.g. to add to a class instance.
+     */
     getOffMethod() {
         return this.off.bind(this);
     }
