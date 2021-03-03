@@ -8,6 +8,9 @@ export declare class Event<T> {
     payload: T;
     constructor(payload: T);
 }
+export declare type OnMethod = <T extends EventDescription>(event: string, callback: Callback<T['payload']>) => void;
+export declare type FireMethod = <T extends EventDescription>(event: string, data?: T['payload']) => void;
+export declare type OffMethod = OnMethod;
 export default class EventInterface {
     private listeners;
     /**

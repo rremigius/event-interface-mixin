@@ -13,6 +13,10 @@ export class Event<T> {
 	}
 }
 
+export type OnMethod = <T extends EventDescription>(event:string, callback:Callback<T['payload']>)=>void;
+export type FireMethod = <T extends EventDescription>(event:string, data?:T['payload'])=>void;
+export type OffMethod = OnMethod;
+
 export default class EventInterface {
 	private listeners:{
 		[key: string]: { callback:Function }[]
