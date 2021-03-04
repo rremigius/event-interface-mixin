@@ -3,9 +3,9 @@ import * as _ from 'lodash';
 export type Callback<E> = (event:E)=>void;
 
 export class Event<E> {
-	payload:E;
-	constructor(payload:E) {
-		this.payload = payload;
+	data:E;
+	constructor(data:E) {
+		this.data = data;
 	}
 }
 

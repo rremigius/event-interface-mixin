@@ -29,7 +29,7 @@ describe("EventInterface", () => {
             const eventInterface = new index_1.default();
             let count = 0;
             eventInterface.on(FooEvent, event => {
-                chai_1.assert.equal(event.payload, 123);
+                chai_1.assert.equal(event.data, 123);
                 count++;
             });
             eventInterface.fire(FooEvent, 123);
@@ -53,7 +53,7 @@ describe("EventInterface", () => {
             const eventInterface = new index_1.default();
             let count = 0;
             eventInterface.on(FooEvent, (event) => {
-                chai_1.assert.equal(event.payload, 123);
+                chai_1.assert.equal(event.data, 123);
                 count++;
             });
             eventInterface.fire(new FooEvent(123));
@@ -76,8 +76,8 @@ describe("EventInterface", () => {
         }
         let car = new Car();
         car.on(MoveEvent, (event) => {
-            chai_1.assert.equal(event.payload.from, 123);
-            chai_1.assert.equal(event.payload.to, 321);
+            chai_1.assert.equal(event.data.from, 123);
+            chai_1.assert.equal(event.data.to, 321);
         });
         car.move();
     });

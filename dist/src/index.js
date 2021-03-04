@@ -22,8 +22,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Event = void 0;
 const _ = __importStar(require("lodash"));
 class Event {
-    constructor(payload) {
-        this.payload = payload;
+    constructor(data) {
+        this.data = data;
     }
 }
 exports.Event = Event;

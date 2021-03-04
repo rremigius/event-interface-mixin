@@ -1,7 +1,7 @@
 export declare type Callback<E> = (event: E) => void;
 export declare class Event<E> {
-    payload: E;
-    constructor(payload: E);
+    data: E;
+    constructor(data: E);
 }
 export declare type OnMethod = <T, E extends Event<T>>(event: EventConstructor<T, E>, callback: Callback<E>) => void;
 export declare type FireMethod = <T, E extends Event<T>>(event: EventConstructor<T, E> | E, data?: T) => void;

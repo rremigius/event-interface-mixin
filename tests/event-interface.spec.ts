@@ -8,7 +8,7 @@ describe("EventInterface", () => {
 			const eventInterface = new EventInterface();
 			let count = 0;
 			eventInterface.on(FooEvent, event => {
-				assert.equal(event.payload, 123);
+				assert.equal(event.data, 123);
 				count++;
 			});
 			eventInterface.fire(FooEvent, 123)
@@ -31,7 +31,7 @@ describe("EventInterface", () => {
 			const eventInterface = new EventInterface();
 			let count = 0;
 			eventInterface.on(FooEvent, (event:FooEvent)=>{
-				assert.equal(event.payload, 123);
+				assert.equal(event.data, 123);
 				count++;
 			});
 			eventInterface.fire(new FooEvent(123));
@@ -61,8 +61,8 @@ describe("EventInterface", () => {
 
 		let car = new Car();
 		car.on(MoveEvent, (event:MoveEvent) => {
-			assert.equal(event.payload.from, 123);
-			assert.equal(event.payload.to, 321);
+			assert.equal(event.data.from, 123);
+			assert.equal(event.data.to, 321);
 		});
 		car.move();
 	});
