@@ -10,6 +10,8 @@ EventInterface has Typescript support, making it possible to fire and listen to 
 
 ### Basic usage
 
+In plain javascript, EventInterface can fire events called by name, with anything as payload.
+
 ```javascript
 let eventInterface = new EventInterface();
 eventInterface.on('myEvent', event => {
@@ -17,10 +19,35 @@ eventInterface.on('myEvent', event => {
 });
 eventInterface.fire('myEvent', 123);
 ```
+You can also use Event classes:
+
+```javascript
+class MyEvent extends Event {}
+let eventInterface = new EventInterface();
+eventInterface.on(MyEvent, event => { // event is a MyEvent
+    // event.payload will be 123 (see below)
+});
+eventInterface.fire(MyEvent, 123);
+eventInterface.fire(new MyEvent(123)); // equivalent
+```
+
+In Typescript, you can only use the class-based approach, to ensure the type-safety of events:
+
+```typescript
+class MyEvent extends Event<number> {}
+let eventInterface = new EventInterface();
+eventInterface.on(MyEvent, event => { // event is strongly-typed as a MyEvent
+    // event.payload will be 123 (see below)
+});
+eventInterface.fire(MyEvent, 123); // will complain if 2nd argument is the wrong type
+eventInterface.fire(new MyEvent(123)); // equivalent
+```
 
 ### Integrate into class
 
 EventInterface can be easily integrated into a class, to provide it with `on`, `off`, and `fire` methods.
+
+**Javascript**:
 
 ```javascript
 class Car {
@@ -41,25 +68,8 @@ car.on('move', event => {
     console.log(`Car moved from ${event.from} to ${event.to}.`);
 });
 ```
-### Typescript
 
-Event though EventInterface allows events to be fired and subscribed to on the fly without prior definition, 
-it does allow type-safe handling of events when using Typescript:
-
-```typescript
-class FooEvent extends Event<number> {} // Define an Event class
-
-const eventInterface = new EventInterface();
-
-// Use event class both as dynamic type and its name as the event
-eventInterface.on<FooEvent>(FooEvent.name, (value:number) => {
-    // Typescript will complain if callback does not accept a number
-});
-// Typescript will complain if the event is not a number
-eventInterface.fire<FooEvent>(FooEvent.name, 123);
-```
-
-Class definitions:
+**Typescript**:
 
 ```typescript
 class MoveEvent extends Event<{from:Coordinates, to:Coordinates}>{}
@@ -80,13 +90,13 @@ class Car {
     move() {
         // (move logic)
         // ...
-        this.fire<MoveEvent>(MoveEvent.name, {from: oldCoordinates, to: newCoordinates});
+        this.fire(new MoveEvent({from: oldCoordinates, to: newCoordinates}));
     }
 }
 
 let car = new Car();
-car.on<MoveEvent>(MoveEvent.name, (event:{from:Coordinates, to:Coordinates}) => {
-    console.log(`Car moved from ${event.from} to ${event.to}.`);
+car.on(MoveEvent, (event:MoveEvent) => {
+    console.log(`Car moved from ${event.payload.from} to ${event.payload.to}.`);
 });
 car.move();
 ```
