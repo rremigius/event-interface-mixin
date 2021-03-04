@@ -22,29 +22,45 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = __importStar(require("../src/index"));
 const chai_1 = require("chai");
 describe("EventInterface", () => {
-    it(".on registers a listener to be called with .fire", () => {
-        const eventInterface = new index_1.default();
-        let count = 0;
-        eventInterface.on('foo', (event) => {
-            chai_1.assert.equal(event, 123);
-            count++;
+    describe(".on and .fire", () => {
+        it("accept Event class as event name", () => {
+            class FooEvent extends index_1.Event {
+            }
+            const eventInterface = new index_1.default();
+            let count = 0;
+            eventInterface.on(FooEvent, event => {
+                chai_1.assert.equal(event.payload, 123);
+                count++;
+            });
+            eventInterface.fire(FooEvent, 123);
+            chai_1.assert.equal(count, 1, "Correct number of callbacks fired.");
         });
-        eventInterface.fire('foo', 123);
-        chai_1.assert.equal(count, 1, "Correct number of callbacks fired.");
-    });
-    it(".on an .fire are strongly typed using the Event class (typescript)", () => {
-        class FooEvent extends index_1.Event {
-        }
-        const eventInterface = new index_1.default();
-        let count = 0;
-        eventInterface.on(FooEvent.name, (value) => {
-            chai_1.assert.equal(value, 123);
-            count++;
+        it("accept string as event name (only in plain Javascript)", () => {
+            const eventInterface = new index_1.default();
+            let count = 0;
+            eventInterface.on('foo', (event) => {
+                chai_1.assert.equal(event, 123);
+                count++;
+            });
+            eventInterface.fire('foo', 123);
+            chai_1.assert.equal(count, 1, "Correct number of callbacks fired.");
         });
-        eventInterface.fire(FooEvent.name, 123);
-        chai_1.assert.equal(count, 1, "Correct number of callbacks fired.");
     });
-    it("methods can be applied to a class", () => {
+    describe(".fire", () => {
+        it("accepts Event instance as single argument (if .on was called with class)", () => {
+            class FooEvent extends index_1.Event {
+            }
+            const eventInterface = new index_1.default();
+            let count = 0;
+            eventInterface.on(FooEvent, (event) => {
+                chai_1.assert.equal(event.payload, 123);
+                count++;
+            });
+            eventInterface.fire(new FooEvent(123));
+            chai_1.assert.equal(count, 1, "Correct number of callbacks fired.");
+        });
+    });
+    it("on, off and fire methods can be applied to a class", () => {
         class MoveEvent extends index_1.Event {
         }
         class Car {
@@ -55,13 +71,13 @@ describe("EventInterface", () => {
                 this.fire = this.eventInterface.getFireMethod();
             }
             move() {
-                this.fire(MoveEvent.name, { from: 123, to: 321 });
+                this.fire(MoveEvent, { from: 123, to: 321 });
             }
         }
         let car = new Car();
-        car.on(MoveEvent.name, (event) => {
-            chai_1.assert.equal(event.from, 123);
-            chai_1.assert.equal(event.to, 321);
+        car.on(MoveEvent, (event) => {
+            chai_1.assert.equal(event.payload.from, 123);
+            chai_1.assert.equal(event.payload.to, 321);
         });
         car.move();
     });

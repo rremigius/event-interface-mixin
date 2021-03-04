@@ -1,16 +1,14 @@
-export declare type Callback<T> = (payload: T) => void;
-export declare type EventDescription = {
-    name?: string;
-    payload?: any;
-};
-export declare type Payload<T extends Event<any>> = T['payload'];
-export declare class Event<T> {
-    payload: T;
-    constructor(payload: T);
+export declare type Callback<E> = (event: E) => void;
+export declare class Event<E> {
+    payload: E;
+    constructor(payload: E);
 }
-export declare type OnMethod = <T extends EventDescription>(event: string, callback: Callback<T['payload']>) => void;
-export declare type FireMethod = <T extends EventDescription>(event: string, data?: T['payload']) => void;
+export declare type OnMethod = <T, E extends Event<T>>(event: EventConstructor<T, E>, callback: Callback<E>) => void;
+export declare type FireMethod = <T, E extends Event<T>>(event: EventConstructor<T, E> | E, data?: T) => void;
 export declare type OffMethod = OnMethod;
+export declare type EventConstructor<T, E extends Event<T>> = {
+    new (...args: any[]): E;
+};
 export default class EventInterface {
     private listeners;
     /**
@@ -18,29 +16,29 @@ export default class EventInterface {
      * @param {string} event
      * @param {Callback} callback
      */
-    on<T extends EventDescription>(event: string, callback: Callback<T['payload']>): void;
+    on<T, E extends Event<T>>(event: EventConstructor<T, E>, callback: Callback<E>): void;
     /**
      * Unsubscribes an event listener from the given event.
-     * @param {string} event
+     * @param {string|EventConstructor} event
      * @param {Callback} callback
      */
-    off<T extends EventDescription>(event: string, callback: Callback<T['payload']>): void;
+    off<T, E extends Event<T>>(event: EventConstructor<T, E>, callback: Callback<E>): void;
     /**
      * Fies an event with the given data.
-     * @param {string} event
-     * @param {T['payload']>}data
+     * @param {EventConstructor|Event} event
+     * @param {T} [data]
      */
-    fire<T extends EventDescription>(event: string, data?: T['payload']): void;
+    fire<T, E extends Event<T>>(event: EventConstructor<T, E> | E, data?: T): void;
     /**
      * Returns the `on` method of the event interface, e.g. to add to a class instance.
      */
-    getOnMethod(): <T extends EventDescription>(event: string, callback: Callback<T["payload"]>) => void;
+    getOnMethod(): <T, E extends Event<T>>(event: EventConstructor<T, E>, callback: Callback<E>) => void;
     /**
      * Returns the `fire` method of the event interface, e.g. to add to a class instance.
      */
-    getFireMethod(): <T extends EventDescription>(event: string, data?: T["payload"] | undefined) => void;
+    getFireMethod(): <T, E extends Event<T>>(event: E | EventConstructor<T, E>, data?: T | undefined) => void;
     /**
      * Returns the `off` method of the event interface, e.g. to add to a class instance.
      */
-    getOffMethod(): <T extends EventDescription>(event: string, callback: Callback<T["payload"]>) => void;
+    getOffMethod(): <T, E extends Event<T>>(event: EventConstructor<T, E>, callback: Callback<E>) => void;
 }

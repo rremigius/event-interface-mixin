@@ -1,6 +1,26 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Event = void 0;
+const _ = __importStar(require("lodash"));
 class Event {
     constructor(payload) {
         this.payload = payload;
@@ -9,7 +29,7 @@ class Event {
 exports.Event = Event;
 class EventInterface {
     constructor() {
-        this.listeners = {};
+        this.listeners = new Map();
     }
     /**
      * Subscribes an event listener to the given event.
@@ -17,37 +37,53 @@ class EventInterface {
      * @param {Callback} callback
      */
     on(event, callback) {
-        if (!(event in this.listeners)) {
-            this.listeners[event] = [];
+        if (!this.listeners.has(event)) {
+            this.listeners.set(event, []);
         }
-        this.listeners[event].push({ callback });
+        // We just added it. We can assume it exists now.
+        this.listeners.get(event).push(callback);
     }
     /**
      * Unsubscribes an event listener from the given event.
-     * @param {string} event
+     * @param {string|EventConstructor} event
      * @param {Callback} callback
      */
     off(event, callback) {
-        if (!(event in this.listeners))
+        let listeners = this.listeners.get(event);
+        if (!listeners)
             return;
-        let listeners = this.listeners[event];
         for (let i = listeners.length - 1; i >= 0; i--) {
-            if (listeners[i].callback === callback) {
+            if (listeners[i] === callback) {
                 listeners.splice(i, 1);
             }
         }
     }
     /**
      * Fies an event with the given data.
-     * @param {string} event
-     * @param {T['payload']>}data
+     * @param {EventConstructor|Event} event
+     * @param {T} [data]
      */
     fire(event, data) {
-        if (!(event in this.listeners)) {
-            return;
+        let finalData;
+        if (event instanceof Event) {
+            // Single-argument call
+            finalData = event;
+            event = (event.constructor);
         }
-        for (let listener of this.listeners[event]) {
-            listener.callback(data);
+        else if (_.isFunction(event)) {
+            // Using Event class as event identifier
+            // TS: if it's a function, it can only mean it's an Event class
+            finalData = new event(data);
+        }
+        else {
+            // In Typescript, it should never come this far
+            finalData = data;
+        }
+        const listeners = this.listeners.get(event);
+        if (!listeners)
+            return;
+        for (let listener of listeners) {
+            listener(finalData);
         }
     }
     /**
