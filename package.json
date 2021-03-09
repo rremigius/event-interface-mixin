@@ -1,6 +1,6 @@
 {
   "name": "event-interface-mixin",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Light-weight event interface that can be integrated into any class, or used independently.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
