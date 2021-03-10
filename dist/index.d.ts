@@ -6,6 +6,11 @@ export declare class Event<E> {
 export declare type OnMethod = <T, E extends Event<T>>(event: EventConstructor<T, E>, callback: Callback<E>) => void;
 export declare type FireMethod = <T, E extends Event<T>>(event: EventConstructor<T, E> | E, data?: T) => void;
 export declare type OffMethod = OnMethod;
+export interface EventInterfacer {
+    on: OnMethod;
+    off: OffMethod;
+    fire: FireMethod;
+}
 export declare type EventConstructor<T, E extends Event<T>> = {
     new (...args: any[]): E;
 };
