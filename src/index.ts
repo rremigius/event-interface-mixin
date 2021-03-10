@@ -13,6 +13,12 @@ export type OnMethod = <T,E extends Event<T>>(event:EventConstructor<T,E>, callb
 export type FireMethod = <T,E extends Event<T>>(event:EventConstructor<T,E>|E, data?:T)=>void;
 export type OffMethod = OnMethod;
 
+export interface EventInterfacer {
+	on:OnMethod;
+	off:OffMethod;
+	fire:FireMethod;
+}
+
 export type EventConstructor<T, E extends Event<T>> = {
 	new(...args: any[]): E;
 };
