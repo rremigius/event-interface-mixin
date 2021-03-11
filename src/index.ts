@@ -9,8 +9,8 @@ export class Event<E> {
 	}
 }
 
-export type OnMethod = <T,E extends Event<T>>(event:EventConstructor<T,E>, callback:Callback<E>)=>void;
-export type FireMethod = <T,E extends Event<T>>(event:EventConstructor<T,E>|E, data?:T)=>void;
+export type OnMethod = <E extends Event<T>,T>(event:EventClass<E,T>, callback:Callback<E>)=>void;
+export type FireMethod = <E extends Event<T>,T>(event:EventClass<E,T>|E, data?:T)=>void;
 export type OffMethod = OnMethod;
 
 export interface EventInterfacer {
@@ -19,19 +19,19 @@ export interface EventInterfacer {
 	fire:FireMethod;
 }
 
-export type EventConstructor<T, E extends Event<T>> = {
+export type EventClass<E extends Event<T>, T> = {
 	new(...args: any[]): E;
 };
 
 export default class EventInterface {
-	private listeners = new Map<EventConstructor<any,any>, Function[]>();
+	private listeners = new Map<EventClass<any,any>, Function[]>();
 
 	/**
 	 * Subscribes an event listener to the given event.
 	 * @param {string} event
 	 * @param {Callback} callback
 	 */
-	public on<T,E extends Event<T>>(event:EventConstructor<T,E>, callback:Callback<E>) {
+	public on<E extends Event<T>,T>(event:EventClass<E,T>, callback:Callback<E>) {
 		if(!this.listeners.has(event)) {
 			this.listeners.set(event, []);
 		}
@@ -42,10 +42,10 @@ export default class EventInterface {
 
 	/**
 	 * Unsubscribes an event listener from the given event.
-	 * @param {string|EventConstructor} event
+	 * @param {string|EventClass} event
 	 * @param {Callback} callback
 	 */
-	public off<T,E extends Event<T>>(event:EventConstructor<T,E>, callback:Callback<E>) {
+	public off<E extends Event<T>,T>(event:EventClass<E,T>, callback:Callback<E>) {
 		let listeners = this.listeners.get(event);
 		if(!listeners) return;
 
@@ -58,21 +58,21 @@ export default class EventInterface {
 
 	/**
 	 * Fies an event with the given data.
-	 * @param {EventConstructor|Event} event
+	 * @param {EventClass|Event} event
 	 * @param {T} [data]
 	 */
-	public fire<T,E extends Event<T>>(event:EventConstructor<T,E>|E, data?:T) {
+	public fire<E extends Event<T>,T>(event:EventClass<E,T>|E, data?:T) {
 		let finalData:E;
 
 		if(event instanceof Event) {
 			// Single-argument call
 			finalData = event;
-			event = <EventConstructor<T,E>>(event.constructor);
+			event = <EventClass<E,T>>(event.constructor);
 		} else if (_.isFunction(event)) {
 			// Using Event class as event identifier
 
 			// TS: if it's a function, it can only mean it's an Event class
-			finalData = new (<EventConstructor<T,E>>event)(data);
+			finalData = new (<EventClass<E,T>>event)(data);
 		} else {
 			// In Typescript, it should never come this far
 			finalData = <any>data;

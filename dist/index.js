@@ -45,7 +45,7 @@ class EventInterface {
     }
     /**
      * Unsubscribes an event listener from the given event.
-     * @param {string|EventConstructor} event
+     * @param {string|EventClass} event
      * @param {Callback} callback
      */
     off(event, callback) {
@@ -60,7 +60,7 @@ class EventInterface {
     }
     /**
      * Fies an event with the given data.
-     * @param {EventConstructor|Event} event
+     * @param {EventClass|Event} event
      * @param {T} [data]
      */
     fire(event, data) {
