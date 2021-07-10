@@ -10,62 +10,89 @@ EventInterface has Typescript support, making it possible to fire and listen to 
 
 ### Basic usage
 
-In plain javascript, EventInterface can fire events called by name, with anything as payload.
+First the EventInterface needs some events registered. These can be any class. 
+Then those events can be fired and listened to.
 
 ```javascript
-let eventInterface = new EventInterface();
-eventInterface.on('myEvent', event => {
-    // event will be 123 (see below)
-});
-eventInterface.fire('myEvent', 123);
-```
-You can also use Event classes:
+class MyEvent {}
+let events = new EventInterface();
+events.$event(MyEvent); // register event class
 
-```javascript
-class MyEvent extends Event {}
-let eventInterface = new EventInterface();
-eventInterface.on(MyEvent, event => { // event is a MyEvent
+events.on(MyEvent, event => { // event is a MyEvent
     // event.payload will be 123 (see below)
 });
-eventInterface.fire(MyEvent, 123);
-eventInterface.fire(new MyEvent(123)); // equivalent
+events.fire(MyEvent, 123);
+events.fire(new MyEvent(123)); // equivalent
 ```
 
 In Typescript, you can only use the class-based approach, to ensure the type-safety of events:
 
 ```typescript
 class MyEvent extends Event<number> {}
-let eventInterface = new EventInterface();
-eventInterface.on(MyEvent, event => { // event is strongly-typed as a MyEvent
+let events = new EventInterface();
+events.$event(MyEvent); // register event class
+
+events.on(MyEvent, event => { // event is strongly-typed as a MyEvent
     // event.payload will be 123 (see below)
 });
-eventInterface.fire(MyEvent, 123); // will complain if 2nd argument is the wrong type
-eventInterface.fire(new MyEvent(123)); // equivalent
+events.fire(MyEvent, 123); // will complain if 2nd argument is the wrong type
+events.fire(new MyEvent(123)); // equivalent
 ```
 
-### Integrate into class
+In plain javascript, EventInterface can fire events called by name, with anything as payload.
 
-EventInterface can be easily integrated into a class, to provide it with `on`, `off`, and `fire` methods.
+```javascript
+// create EventInterface with `allowDynamicEvents` parameter `true`, so it also accepts unregistered events
+let events = new EventInterface(true); 
+events.on('myEvent', event => {
+    // event will be 123 (see below)
+});
+events.fire('myEvent', 123);
+```
+
+In TypeScript, listening and firing unregistered events is also possible, except the event parameter must be a class:
+```typescript
+let events = new EventInterface(true); 
+events.on(MyEvent, event => {
+    // event will be a MyEvent with number 123 (see below)
+});
+events.fire(new MyEvent(123));
+```
+
+### Integrate into classes
+
+EventInterface provides a convenient integration with classes, allowing developers and their IDEs to easily understand
+what events can be fired and listened to:
 
 **Javascript**:
 
 ```javascript
-class Car {
-    constructor() {
-        this.eventInterface = new EventInterface();
-        this.on = this.eventInterface.getOnMethod();
-        this.off = this.eventInterface.getOffMethod();
-        this.fire = this.eventInterface.getFireMethod();
-    }
-    move() {
-        // (move logic)
-        // ...
-        this.fire('move', {from: oldCoordinates, to: newCoordinates});
+class MoveEvent {
+	constructor(from, to){
+		this.from = from;
+		this.to = to;
     }
 }
+class CarEvents extends EventInterface {
+	constructor() {
+		this.move = this.$event(MoveEvent);
+    }
+}
+class Car {
+	constructor() {
+		this.events = new CarEvents();
+	}
+
+	move() {
+		// (move logic)
+		// ...
+		this.events.move.fire(new MoveEvent(oldCoordinates, newCoordinates));
+	}
+}
+
 let car = new Car();
-car.on('move', event => {
-    console.log(`Car moved from ${event.from} to ${event.to}.`);
+car.events.move.on(event => {
+	console.log(`Car moved from ${event.from} to ${event.to}.`);
 });
 ```
 
@@ -73,29 +100,22 @@ car.on('move', event => {
 
 ```typescript
 class MoveEvent extends Event<{from:Coordinates, to:Coordinates}>{}
+class CarEvents extends EventInterface {
+	move = this.$event(MoveEvent);
+}
 
 class Car {
-    on:OnMethod;
-    off:OffMethod;
-    fire:FireMethod;
-    eventInterface:EventInterface;
-    
-    constructor() {
-        this.eventInterface = new EventInterface();
-        this.on = this.eventInterface.getOnMethod();
-        this.off = this.eventInterface.getOffMethod();
-        this.fire = this.eventInterface.getFireMethod();
-    }
+	events = new CarEvents();
     
     move() {
         // (move logic)
         // ...
-        this.fire(new MoveEvent({from: oldCoordinates, to: newCoordinates}));
+        this.events.move.fire(new MoveEvent({from: oldCoordinates, to: newCoordinates}));
     }
 }
 
 let car = new Car();
-car.on(MoveEvent, (event:MoveEvent) => {
+car.events.move.on((event:MoveEvent) => {
     console.log(`Car moved from ${event.payload.from} to ${event.payload.to}.`);
 });
 car.move();
