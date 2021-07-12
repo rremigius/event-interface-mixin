@@ -55,7 +55,9 @@ class EventEmitter {
                 throw new Error(message);
             }
         }
-        this.listeners.forEach(listener => {
+        // Copy in case any of the listeners unsubscribes themselves and modifies the array while we are iterating it
+        const listeners = [...this.listeners];
+        listeners.forEach(listener => {
             listener(event);
         });
     }
