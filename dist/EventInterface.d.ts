@@ -35,6 +35,11 @@ export default class EventInterface {
      */
     $off<T>(EventClass: string | Constructor<T>, callback: callback<any>): void;
     /**
+     * Remove given callbacks from all events.
+     * @param callbacks
+     */
+    $offAll(callbacks: callback<any>[]): void;
+    /**
      * Fire event based on a runtime-defined string.
      * @param event
      * @param payload

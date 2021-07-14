@@ -93,6 +93,18 @@ class EventInterface {
         event.off(callback);
     }
     /**
+     * Remove given callbacks from all events.
+     * @param callbacks
+     */
+    $offAll(callbacks) {
+        for (let callback of callbacks) {
+            for (let name in this.$byName) {
+                const event = this.$byName[name];
+                event.off(callback);
+            }
+        }
+    }
+    /**
      * Fire event based on a runtime-defined string.
      * @param event
      * @param payload

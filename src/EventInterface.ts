@@ -5,9 +5,9 @@ import {callback} from "./EventEmitter";
 
 import log from "./log";
 
-export type OnMethod = (EventClass: Constructor<unknown>, callback: callback<unknown>) => void
+export type OnMethod = (EventClass: Constructor<unknown>, callback: callback<unknown>) => void;
 export type OffMethod = (event: string | Class, callback: callback<unknown>) => void;
-export type FireMethod = (event: any, payload?: unknown) => void
+export type FireMethod = (event: any, payload?: unknown) => void;
 
 export default class EventInterface {
 	private readonly $allowDynamicEvents:boolean;
@@ -81,6 +81,19 @@ export default class EventInterface {
 	$off<T>(EventClass:string|Constructor<T>, callback:callback<any>) {
 		const event = this.$get(EventClass);
 		event.off(callback);
+	}
+
+	/**
+	 * Remove given callbacks from all events.
+	 * @param callbacks
+	 */
+	$offAll(callbacks:callback<any>[]) {
+		for(let callback of callbacks) {
+			for(let name in this.$byName) {
+				const event = this.$byName[name];
+				event.off(callback);
+			}
+		}
 	}
 
 	/**
