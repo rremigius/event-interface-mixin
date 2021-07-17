@@ -40,9 +40,14 @@ class EventEmitter {
     listenerCount() {
         return this.listeners.length;
     }
+    /**
+     * Registers the given callback to be executed on the event.
+     * @param {Function} listener
+     * @return A function to be called to stop listening.
+     */
     on(listener) {
         this.listeners.push(listener);
-        return listener;
+        return () => this.off(listener);
     }
     off(listener) {
         this.listeners.splice(this.listeners.indexOf(listener), 1);

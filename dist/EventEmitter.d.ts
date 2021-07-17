@@ -6,7 +6,12 @@ export default class EventEmitter<T> {
     type?: TypeClass<T>;
     constructor(runtimeType?: TypeClass<T>);
     listenerCount(): number;
-    on(listener: callback<T>): callback<T>;
+    /**
+     * Registers the given callback to be executed on the event.
+     * @param {Function} listener
+     * @return A function to be called to stop listening.
+     */
+    on(listener: callback<T>): () => void;
     off(listener: callback<T>): void;
     fire(event: T): void;
     private isCorrectType;

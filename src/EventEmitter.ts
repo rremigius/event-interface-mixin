@@ -27,9 +27,14 @@ export default class EventEmitter<T> {
 		return this.listeners.length;
 	}
 
+	/**
+	 * Registers the given callback to be executed on the event.
+	 * @param {Function} listener
+	 * @return A function to be called to stop listening.
+	 */
 	on(listener:callback<T>) {
 		this.listeners.push(listener);
-		return listener;
+		return ()=>this.off(listener);
 	}
 
 	off(listener:callback<T>) {
