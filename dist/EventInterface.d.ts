@@ -1,9 +1,9 @@
 import { Class, Constructor } from "validation-kit";
 import EventEmitter from "./EventEmitter";
 import { callback } from "./EventEmitter";
-export declare type OnMethod = (EventClass: Constructor<unknown>, callback: callback<unknown>) => void;
-export declare type OffMethod = (event: string | Class, callback: callback<unknown>) => void;
-export declare type FireMethod = (event: any, payload?: unknown) => void;
+export type OnMethod = (EventClass: Constructor<unknown>, callback: callback<unknown>) => void;
+export type OffMethod = (event: string | Class, callback: callback<unknown>) => void;
+export type FireMethod = (event: any, payload?: unknown) => void;
 export default class EventInterface {
     private readonly $allowDynamicEvents;
     private readonly $byName;

@@ -9,8 +9,9 @@ function getTypeName(type) {
     return typeof (type);
 }
 export default class EventEmitter {
+    listeners = [];
+    type;
     constructor(runtimeType) {
-        this.listeners = [];
         this.type = runtimeType;
     }
     listenerCount() {

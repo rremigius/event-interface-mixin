@@ -3,15 +3,16 @@ import { isClass } from "validation-kit";
 import EventEmitter from "./EventEmitter";
 import log from "./log";
 export default class EventInterface {
-    constructor(allowDynamicEvents = false) {
-        this.$byName = {};
-        this.$allowDynamicEvents = allowDynamicEvents;
-    }
+    $allowDynamicEvents;
+    $byName = {};
     static getEventName(event) {
         if (_.isFunction(event)) {
             return event.name;
         }
         return event;
+    }
+    constructor(allowDynamicEvents = false) {
+        this.$allowDynamicEvents = allowDynamicEvents;
     }
     /**
      * Creates an EventEmitter and registers it.

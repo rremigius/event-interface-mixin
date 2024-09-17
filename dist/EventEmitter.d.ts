@@ -1,6 +1,6 @@
 import { Alphanumeric, Constructor } from "validation-kit";
-export declare type TypeClass<T> = Constructor<T> | String | Number | Boolean | Alphanumeric;
-export declare type callback<T> = (payload: T) => void;
+export type TypeClass<T> = Constructor<T> | String | Number | Boolean | Alphanumeric;
+export type callback<T> = (payload: T) => void;
 export default class EventEmitter<T> {
     private listeners;
     type?: TypeClass<T>;
