@@ -1,38 +1,14 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const _ = __importStar(require("lodash"));
-const validation_kit_1 = require("validation-kit");
-const log_control_1 = __importDefault(require("log-control"));
-const log = log_control_1.default.instance("event-emitter");
+import * as _ from "lodash";
+import { Alphanumeric, isAlphanumeric, isClass } from "validation-kit";
+import Log from "log-control";
+const log = Log.instance("event-emitter");
 function getTypeName(type) {
     const className = _.get(type, 'constructor.name');
     if (className)
         return className;
     return typeof (type);
 }
-class EventEmitter {
+export default class EventEmitter {
     constructor(runtimeType) {
         this.listeners = [];
         this.type = runtimeType;
@@ -72,9 +48,9 @@ class EventEmitter {
             case String: return _.isString(value);
             case Number: return _.isNumber(value);
             case Boolean: return _.isBoolean(value);
-            case validation_kit_1.Alphanumeric: return validation_kit_1.isAlphanumeric(value);
+            case Alphanumeric: return isAlphanumeric(value);
             default: {
-                if (validation_kit_1.isClass(this.type)) {
+                if (isClass(this.type)) {
                     return value instanceof this.type;
                 }
                 // Should not happen.
@@ -83,4 +59,3 @@ class EventEmitter {
         }
     }
 }
-exports.default = EventEmitter;

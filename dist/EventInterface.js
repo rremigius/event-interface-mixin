@@ -1,32 +1,8 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const _ = __importStar(require("lodash"));
-const validation_kit_1 = require("validation-kit");
-const EventEmitter_1 = __importDefault(require("./EventEmitter"));
-const log_1 = __importDefault(require("./log"));
-class EventInterface {
+import * as _ from "lodash";
+import { isClass } from "validation-kit";
+import EventEmitter from "./EventEmitter";
+import log from "./log";
+export default class EventInterface {
     constructor(allowDynamicEvents = false) {
         this.$byName = {};
         this.$allowDynamicEvents = allowDynamicEvents;
@@ -46,7 +22,7 @@ class EventInterface {
         if (!name) {
             name = EventClass.name;
         }
-        const event = new EventEmitter_1.default(EventClass);
+        const event = new EventEmitter(EventClass);
         return this.$register(event, name);
     }
     /**
@@ -76,8 +52,8 @@ class EventInterface {
     $on(EventClass, callback) {
         const eventEmitter = this.$get(EventClass);
         eventEmitter.on(event => {
-            if (validation_kit_1.isClass(EventClass) && !(event instanceof EventClass)) {
-                log_1.default.error(`Expected '${EventClass.name}', but got:`, event);
+            if (isClass(EventClass) && !(event instanceof EventClass)) {
+                log.error(`Expected '${EventClass.name}', but got:`, event);
                 throw new Error(`Expected '${EventClass.name}'.`);
             }
             callback(event);
@@ -112,7 +88,7 @@ class EventInterface {
     $fire(event, payload) {
         let eventEmitter;
         // Event name with payload
-        if (_.isString(event) || validation_kit_1.isClass(event)) {
+        if (_.isString(event) || isClass(event)) {
             eventEmitter = this.$get(event);
             eventEmitter.fire(payload);
             return;
@@ -134,7 +110,7 @@ class EventInterface {
                 throw new Error(`Unknown event '${event}'.`);
             }
             // Define event on the fly
-            this.$byName[event] = new EventEmitter_1.default();
+            this.$byName[event] = new EventEmitter();
         }
         return this.$byName[event];
     }
@@ -148,4 +124,3 @@ class EventInterface {
         return this.$fire.bind(this);
     }
 }
-exports.default = EventInterface;
