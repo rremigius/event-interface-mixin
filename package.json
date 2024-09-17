@@ -24,7 +24,7 @@
     "lodash": "^4.17.21",
     "log-control": "0.0.2",
     "typescript": "^4.2.2",
-    "validation-kit": "0.0.7"
+    "validation-kit": "github:rremigius/validation-kit"
   },
   "devDependencies": {
     "@types/chai": "^4.2.15",
